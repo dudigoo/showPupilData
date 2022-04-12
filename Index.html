@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html dir="rtl">
+    <head>
+<style>
+h3 {
+  text-align: center;
+}
+h5 {
+  text-align: center;
+}
+</style>
+  <base target="_top">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.11.3/sorting/datetime-moment.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.11.4/dataRender/datetime.js"></script>
+
+
+  <!--##JAVASCRIPT FUNCTIONS ~ start ---------------------------------------------------- -->
+  <script>
+$(document).ready(function () {
+    $('.dataTables_length').addClass('bs-select');
+    $.fn.dataTable.moment( 'D/M/YY' );
+    $.fn.dataTable.moment( 'DD/MM/YY' );
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );
+    google.script.run.withFailureHandler(onInitFailure);
+    google.script.run.withSuccessHandler(onInitSuccess).getAlfonNames();
+});
+      function onInitFailure(error) {
+        //showTable( "ERROR: " + error.message);
+      }
+      function onInitSuccess(res) {
+        //console.log('onInitSuccess dat='+res);
+        var dataList = $("#kids");
+			  dataList.empty();
+        if(res.length) {
+          for(var i=0; i<res.length; i++) {
+            var opt = $("<option></option>").attr("value", res[i]);
+            dataList.append(opt);
+          }
+        }
+      }
+
+</script>
+<script> 
+          //PREVENT FORMS FROM SUBMITTING / PREVENT DEFAULT BEHAVIOUR
+          function preventFormSubmit() {
+            var forms = document.querySelectorAll('form');
+            for (var i = 0; i < forms.length; i++) {
+              forms[i].addEventListener('submit', function(event) {
+              event.preventDefault();
+              });
+            }
+          }
+          window.addEventListener("load", preventFormSubmit, true); 
+             
+          
+          //HANDLE FORM SUBMISSION
+          function handleFormSubmit(formObject) {
+            console.log('handleFormSubmit');
+            google.script.run.withFailureHandler(onFailure);
+            google.script.run.withSuccessHandler(createTable).processForm(formObject);
+            //document.getElementById("search-form").reset();
+          }
+                
+          function onFailure(error) {
+            var div = document.getElementById('search-results');
+            div.innerHTML = "ERROR: " + error.message;
+          }
+
+          function tableTag(res,tid) {
+            //console.log('tableTag1 res='+res);
+            res += "<table class='display cell-border' id='"+tid+"' style='text-align:right'>"+
+                           "<thead style='white-space: nowrap'>"+
+                             "<tr>";
+            //console.log('tableTag2 res='+res);
+            return res;
+          }
+
+          function tableTitle(res,title) {
+            return res+"<h5>"+title +"</h5>";
+          }
+
+          function startTable(res,tid) {
+            //console.log('startTable tid='+tid+' res='+res);
+
+            if (tid=='quiz'){
+              res=tableTitle(res,'<img src="https://drive.google.com/uc?export=download&id=1-WWwY6WEf6ZdQp0wgJYlge2mrxMFQE7d" hight="30" width="30" title="To see the quiz mistakes: Open the view link (in a new tab)  > scroll to bottom > Submit > View score" border="0">' + "&nbsp שאלונים");
+              res=tableTag(res,tid);
+              res+= "<th>שם</th>"+
+                              "<th>תאריך</th>"+
+                              "<th>שאלון</th>"+
+                              "<th>ציון</th>"+
+                              "<th>פרוט</th>";
+            } else if(tid=='mipold'){
+                res=tableTitle(res,"מבדק וותיקים");
+                res=tableTag(res,tid);
+                res+= "<th>שם</th>"+
+                    "<th>תאריך</th>"+
+                    "<th>הערה</th>"+
+                    "<th>משוואות</th>"+
+                    "<th>שברים</th>"+
+                    "<th>מ.צירים</th>"+
+                    "<th>יחס</th>"+
+                    "<th>ממוצע</th>"+
+                    "<th>מכוונים</th>"+
+                    "<th>ס.פעולות</th>"+
+                    "<th>בטוי אלג.</th>"+
+                    "<th>מלוליות</th>"+
+                    "<th>יחס</th>"+
+                    "<th>חפ.משולשים</th>"+
+                    "<th>פ.קוית</th>"+
+                    "<th>%</th>"+
+                    "<th>פתגורס</th>"+
+                    "<th>טכנ.אלגב.</th>";
+            } else if(tid=='mipnew'){
+                res=tableTitle(res,"מבדק חדשים");
+                  //console.log('mipnew2 res='+res);
+                res=tableTag(res,tid);
+                  //console.log('mipnew3 res='+res);
+                res+= "<th>שם</th>"+
+                    "<th>תאריך</th>"+
+                    "<th>מתמט:הקבמה</th>"+
+                    "<th>הערה</th>"+
+                    "<th>אנגלית:הקבצה</th>"+
+                    "<th>הערה</th>"+
+                    "<th>כתיבה 20נק</th>"+
+                    "<th>הבנה 58נק</th>"+
+                    "<th>לשון:הבנה</th>"+
+                    "<th>לשון</th>"+
+                    "<th>הבעה</th>"+
+                    "<th>צ.כולל</th>";
+                  //console.log('mipnew4 res='+res);
+            } else if(tid=='schoolGrades'){
+                res=tableTitle(res,"ציוני בית ספר");
+                //console.log('schoolGrades res='+res);
+                res=tableTag(res,tid);
+                //console.log('schoolGrades2 res='+res);
+                res+= "<th>שם</th>"+
+                    "<th>שכבה</th>"+
+                    "<th>מקצוע/מורה</th>"+
+                    "<th>ציונים</th>";
+                //console.log('schoolGrades3 res='+res);
+            } else {
+              res=tableTitle(res,"דיווח מורים");
+              res=tableTag(res,tid);
+              res+= "<th>תאריך</th>"+
+                    "<th>מקצוע</th>"+
+                   "<th>פעילות/התרשמות</th>"+
+                    "<th>ש.ב.</th>"+
+                    "<th>מורה</th>"+
+                   "<th>תלמיד</th>"+
+                    "<th>שכבה</th>"+
+                    "<th>כתה</th>"+
+                    "<th>הגעה</th>"+
+                    "<th>ציוד</th>"+
+                    "<th>השתתפות</th>";
+            }
+            res += "</tr>"+
+                    "</thead><tbody>";
+            //console.log('end startTable tid='+tid+' res='+res);
+            return res;
+          }
+
+          function closeTable(res) { 
+            //console.log('closeTabl res='+res);
+            res += "</tbody></table><br>";
+            return res;
+          }
+
+          function createTable(dataArray) {
+            //console.log('start createTable');
+            
+              //debugger;
+            if(dataArray && dataArray !== undefined && dataArray.length != 0){
+              //console.log('dataArray='+dataArray);
+              let result ="";
+
+              var maakav_start_row=0;
+              
+              let i=0;
+              for(; i<dataArray.length; i++) {
+                if (dataArray[i][0] == '!head'){
+                  //console.log('i='+i+' head='+dataArray[i][1]);
+                  if (i>0){
+                    result=closeTable(result);
+                  }
+                  result=startTable(result, dataArray[i][1]);
+                  continue;
+                }
+                result += "<tr>";
+                for(var j=0; j<dataArray[i].length; j++){
+                  //if (j==1){console.log('j='+dataArray[i][j]);}
+                  result += "<td>"+dataArray[i][j]+"</td>";
+                }
+                result += "</tr>";
+              }
+              result=closeTable(result);
+              //console.log('2inner='+result);
+              var div = document.getElementById('search-results');
+              div.innerHTML = result;
+              $('#mipnew').DataTable({
+                    "scrollX": true,
+                    columnDefs: [
+                        { orderable: false, targets: '_all' }
+                    ]
+                });
+              $('#mipold').DataTable({
+                    "scrollX": true,
+                    columnDefs: [{ orderable: false, targets: '_all' }
+                    ]
+                });
+              $('#quiz').DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: 3 },
+                        {
+                           targets: 1,
+                           render: $.fn.dataTable.render.moment( 'YYYY-M-D HH:mm:ss','HH:mm D/M/YY' )
+                        }
+                    ],
+                    "order": [[ 0, 'asc' ], [ 1, 'desc' ]],
+                    "orderClasses": false,
+                    "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ]
+                });
+                $('#schoolGrades').DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: 1 },
+                        { orderable: false, targets: 3 }
+                    ],
+                    "order": [[ 0, 'asc' ], [ 3, 'asc' ]],
+                    "orderClasses": false,
+                    "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ]
+                });
+              $('#treport').DataTable({
+                    columnDefs: [
+                    { orderable: false, targets: 2 },
+                    { orderable: false, targets: 3 }
+                    ],
+                  "order": [[ 5, 'asc' ], [ 0, 'desc' ]],
+                  "pageLength": 15,
+                  "orderClasses": false,
+                  "scrollX": true,
+                  "lengthMenu": [ [15, 25, 50, 100, -1], [15, 25, 50, 100, "All"] ]
+              });
+
+            }else{
+              //console.log('no dta');
+              var div = document.getElementById('search-results');
+              //div.empty()
+              div.innerHTML = "<h6>Data not found</h6>";
+            }
+          } 
+        </script>
+        <!--##JAVASCRIPT FUNCTIONS ~ END ---------------------------------------------------- -->
+    </head>
+    <body>
+        <div class="container">
+            <br>
+            <div class="row">
+              <div class="col">
+            
+        <h3>הישגי תלמיד</h3><br>
+                  <!-- ## SEARCH FORM ------------------------------------------------ -->
+                  <form id="search-form" class="form-inline" onsubmit="handleFormSubmit(this)">
+                    <div class="form-group mb-2">
+                      <label for="searchtext">שם תלמיד/קבוצה</label>&nbsp
+                      <img src="https://drive.google.com/uc?export=download&id=1-WWwY6WEf6ZdQp0wgJYlge2mrxMFQE7d" hight="25" width="25" title="שם פרטי ראשון. אפשר כמה שמות מופרדים בפסיק, אפשר שם חלקי. קבוצות זה ז1, ח2 וכולי. ab1 לאני בגרותי" border="0">
+                    </div>
+                    
+                    <div class="form-group mx-sm-3 mb-2">
+                      <input type="text" class="form-control" id="searchtext" name="searchtext" placeholder="Search Text" list="kids" >
+                      <datalist id="kids">
+                      </datalist>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">חפש</button>
+                  </form>
+                  <!-- ## SEARCH FORM ~ END ------------------------------------------- -->
+              
+              </div>    
+            </div>
+            <div class="row">
+              <div class="col">
+            
+                <!-- ## TABLE OF SEARCH RESULTS ------------------------------------------------ -->
+                <div id="search-results" >
+                  <!-- The Data Table is inserted here by JavaScript -->
+                </div>
+                <!-- ## TABLE OF SEARCH RESULTS ~ END ------------------------------------------------ -->
+                  
+              </div>
+            </div>
+        </div>
+
+    </body>
+</html>
